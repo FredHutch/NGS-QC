@@ -1,0 +1,4 @@
+biopython==1.84
+multiqc==1.21
+flask==3.0.3
+gunicorn==23.0.0

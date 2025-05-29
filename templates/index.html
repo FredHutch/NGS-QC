@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGSQC</title>
+    <style>
+        .field-container {
+            margin-bottom: 5px;
+        }
+        input[type="number"] {
+            width: 8em;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            padding: 4px;
+            text-align: right;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        input[type="radio"] {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            font-size: 18px;
+            padding: 5px 10px;
+            margin-bottom: 5px;
+            margin-right: 5px;
+        }
+        .delete-btn {
+            font-size: 16px;
+            padding: 3px 10px;
+            margin-bottom: 5px;
+        }
+        body {
+            min-width:800px; 
+            font-family: "Helvetica Neue", Helvetica, Verdana, Arial, sans-serif;
+        }
+        h1 {
+            margin-left: 30px;
+        }
+        #indent {
+            background:#FFFFFF;
+            margin: 10px 30px 10px 30px;
+        }
+        #footer {
+            background:#FFF;
+            border-top:1px solid #1f669b;
+            border-bottom:1px solid #1f669b;
+            clear:both;
+        }
+
+        #footer p {
+            margin: 5px 10px 5px 10px;
+            font-size: 11px;
+            color: gray;
+        }
+
+        .upload-container {
+            background-color: white;
+            padding-top: 5px;
+            padding-bottom: 20px;
+            padding-left: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            /*text-align: center;*/
+        }
+
+        .file-upload {
+            /*margin: 5px 200px 5px 0;*/
+            margin-right: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            /*width: 100%;*/
+        }
+        input[type="file"] {
+            margin: 5px 0;
+            padding: 5px;
+            /*border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 16px;*/
+        }
+        /*label {
+            display: block;
+            margin: 5px 0;
+        }*/
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div>
+    <img src="static/NGSQC.png" alt="NGS-QC" style="width: 200px; height: auto; margin-left: 30px; margin-top: 20px;">
+    </div>
+    <hr size="2" color="#3399CC">
+    <div id="indent">
+        <h2 style="color: #3399CC;">Quality Control of NGS Data</h2>
+        <p>Welcome to the NGS-QC web application. This tool allows you to upload FASTQ files and perform quality control analysis.</p>
+        <p>To get started, please upload your FASTQ file using the form below.</p>
+    <div class="upload-container">        
+        <form action="/ngsqc" method="post" enctype="multipart/form-data">
+            <h2>Upload FASTQ File (Max 100MB)</h2>
+            <div class="file-upload">
+                <label for="file1">Read 1 (R1):</label>                               
+                <input type="file" name="file1" accept=".fastq,.fq,.gz,.fasta,.fa,.fas,.fna" required><br>
+                <label for="file2">Read 2 (R2):</label>
+                <input type="file" name="file2" accept=".fastq,.fq,.gz,.fasta,.fa,.fas,.fna" >
+            </div>
+            <h2>Reference Sequence (HXB2)</h2>  
+            <div class="file-upload">
+                <!--<input type="text" name="ref" placeholder="HXB2" value="HXB2" required>-->
+                <label for="reffile">OR, upload your own reference sequence fasta file (Max 1MB):</label>
+                <input type="file" name="reffile" accept=".fasta,.fa,.fas,.fna" >
+            <h2>Choose Aligner</h2>  
+            <div class="file-upload">
+                <input type="radio" id="bwa" name="tool" value="BWA" checked>
+                <label for="bwa">BWA</label>
+                <input type="radio" id="minimap2-sr" name="tool" value="Minimap2-sr">
+                <label for="minimap2-sr">Minimap2-sr</label> 
+                <input type="radio" id="minimap2-lr:hq" name="tool" value="Minimap2-lr:hq">
+                <label for="minimap2-lr:hq">Minimap2-lr:hq</label> 
+            </div> 
+            <h2>Minimum Mapping Quality (MAPQ):</h2>  
+            <div class="file-upload">
+                <input type="number" id="mapq" name="mapq" min="0" max="60" value="20" required>
+            </div>
+            <br>
+            <button type="submit">Submit</button>
+            <button type="reset">Reset</button>
+        </form>
+        {% if message %}<p style="font-size:14px; color:red;">{{ message }}</p>{% endif %}
+    </div>
+</div>
+</br>   
+<hr size="2" color="#3399CC"> 
+<div id="indent">
+<h3>Description:</h3>
+    <p>NGS-QC is a Bioinformatics tool to perform quality control analysis of 
+    next-generation sequencing (NGS) data. It is designed to work with FASTQ or gzipped files
+    generated from different NGS platforms. The results are presented in a user-friendly
+    format, allowing researchers to quickly assess the quality of their sequencing data. 
+    The tool provides a comprehensive analysis of the sequencing data as follows:</p>
+    <ul>
+    <li><a href="http://www.bioinformatics.babraham.ac.uk/projects/fastqc/">FastQC:</a> read quality scores, length distribution,
+            GC content, and adapter contamination, etc.
+    </li>
+    <li><a href="https://github.com/lh3/bwa">BWA</a>/<a href="https://github.com/lh3/minimap2">Minimap2:</a> map the reads to a reference sequence
+            (HXB2 or user provides). BWA is best for the short reads 
+            (e.g. Illumina). Minimap2 provides two options. Minimap2-sr 
+            works for the short reads, Minimap2-lr:hq is for the long reads 
+            (e.g. PacBio and Nanopore)
+    </li>
+    <li><a href="https://github.com/samtools/samtools">SAMtools:</a> calculate the read mapping stats such as number of mapped reads, 
+            mapping quality (MAPQ), read depth, breadth coverage and maximun base 
+            frequency across reference, etc.
+    </li>
+    <li><a href="https://seqera.io/multiqc/">MultiQC:</a> visualizion of the sequencing quality control analysis.</p>
+    </li>
+    </ul>   
+    <h3>Contact:</h3>
+    <p>For any questions, bugs and suggestions, please send email to <a href="mailto:cohnlabsupport@fredhutch.org?subject=NGSQC">CohnLabSupport@fredhutch.org</a> and include a few sentences describing, briefly, the nature of your questions and include contact information.</p>
+</div>
+	
+	<div id="footer">
+		<p class="copyright">&copy; 2025 Fred Hutch Cancer Center. All rights reserved.</p>
+	</div>
+
+</body>
+</html>
