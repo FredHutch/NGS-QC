@@ -1,0 +1,20 @@
+version: '3.3'
+services:
+  ngsqc:
+    image: sc-registry.fredhutch.org/ngsqc:latest
+    networks:
+      - sc-swarm-net
+    deploy:
+      restart_policy:
+        condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.ngsqc.rule=Host(`ngsqc.fredhutch.org`)"
+        - "traefik.http.routers.ngsqc-secured.rule=Host(`ngsqc.fredhutch.org`)"
+        - "traefik.http.routers.ngsqc.entrypoints=web,web-secured"
+        - "traefik.http.services.ngsqc.loadbalancer.server.port=8000" # it seems you always need to give traefik a port so it 'notices' the service
+        - "traefik.http.routers.ngsqc.tls=true"
+
+networks:
+  sc-swarm-net:
+    external: true
