@@ -90,22 +90,22 @@ def upload_files():
     
     try:
         # Check file sizes and save files
-        file1.seek(0, os.SEEK_END)  
-        if file1.tell() > FILE_LIMITS['file1']:
+        file1.stream.seek(0, 2)
+        if file1.stream.tell() > FILE_LIMITS['file1']:
             logger.error(f"File1 exceeds size limit: {file1.filename}")
             return render_template("index.html", message=f"File {file1.filename} exceeds size limit of 100MB")
-        file1.seek(0)  # Reset file pointer after reading
+        file1.stream.seek(0)  # Reset file pointer after reading
         file1.save(file1_path)
         logger.info(f"Saved file1: {file1_path}")
         
         file2_path = None
         if file2 and file2.filename:
             # Check file sizes and save files
-            file2.seek(0, os.SEEK_END)  
-            if file2.tell() > FILE_LIMITS['file2']:
+            file2.stream.seek(0, 2)  
+            if file2.stream.tell() > FILE_LIMITS['file2']:
                 logger.error(f"File2 exceeds size limit: {file2.filename}")
                 return render_template("index.html", message=f"File {file2.filename} exceeds size limit of 100MB")
-            file2.seek(0)  # Reset file pointer after reading
+            file2.stream.seek(0)  # Reset file pointer after reading
             file2_filename = secure_filename(file2.filename)
             file2_path = os.path.join(output_dir, file2_filename)
             file2.save(file2_path)
@@ -114,11 +114,11 @@ def upload_files():
         #reffile_path = None
         if reffile and reffile.filename:
             # Check file sizes and save files
-            reffile.seek(0, os.SEEK_END)  
-            if reffile.tell() > FILE_LIMITS['reffile']:
+            reffile.stream.seek(0, 2)  
+            if reffile.stream.tell() > FILE_LIMITS['reffile']:
                 logger.error(f"Reffile exceeds size limit: {reffile.filename}")
                 return render_template("index.html", message=f"File {reffile.filename} exceeds size limit of 1MB")
-            reffile.seek(0)
+            reffile.stream.seek(0)
             reffile_filename = secure_filename(reffile.filename)
             reference_path = os.path.join(output_dir, reffile_filename)
             reffile.save(reference_path)
