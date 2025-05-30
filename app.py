@@ -89,7 +89,9 @@ def upload_files():
     file1_path = os.path.join(output_dir, file1_filename)
     
     try:
-        if len(file1.read()) > FILE_LIMITS['file1']:
+        # Check file sizes and save files
+        file1.seek(0, os.SEEK_END)  
+        if file1.tell() > FILE_LIMITS['file1']:
             logger.error(f"File1 exceeds size limit: {file1.filename}")
             return render_template("index.html", message=f"File {file1.filename} exceeds size limit of 100MB")
         file1.seek(0)  # Reset file pointer after reading
@@ -98,7 +100,9 @@ def upload_files():
         
         file2_path = None
         if file2 and file2.filename:
-            if len(file2.read()) > FILE_LIMITS['file2']:
+            # Check file sizes and save files
+            file2.seek(0, os.SEEK_END)  
+            if file2.tell() > FILE_LIMITS['file2']:
                 logger.error(f"File2 exceeds size limit: {file2.filename}")
                 return render_template("index.html", message=f"File {file2.filename} exceeds size limit of 100MB")
             file2.seek(0)  # Reset file pointer after reading
@@ -109,7 +113,9 @@ def upload_files():
 
         #reffile_path = None
         if reffile and reffile.filename:
-            if len(reffile.read()) > FILE_LIMITS['reffile']:
+            # Check file sizes and save files
+            reffile.seek(0, os.SEEK_END)  
+            if reffile.tell() > FILE_LIMITS['reffile']:
                 logger.error(f"Reffile exceeds size limit: {reffile.filename}")
                 return render_template("index.html", message=f"File {reffile.filename} exceeds size limit of 1MB")
             reffile.seek(0)
